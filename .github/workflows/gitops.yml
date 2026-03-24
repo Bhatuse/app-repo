@@ -18,12 +18,12 @@ jobs:
 
       - name: Update image tag
         run: |
-          cd gitops-manifests/autogit
+          cd gitops-repo/autogit
           sed -i 's|image: .*|image: bhatuse2/nginx:${{ github.sha }}|' deployment.yml
 
       - name: Commit and Push
         run: |
-          cd gitops-manifests
+          cd gitops-repo
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
