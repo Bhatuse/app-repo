@@ -1,5 +1,3 @@
-#tokenAdded: true
-
 name: basic-gitops-app
 
 on:
@@ -12,35 +10,31 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
 
-steps:
-  - uses: actions/checkout@v4   👈 code available here
+    steps:
+      - uses: actions/checkout@v4
 
-  # 👇 ADD HERE
-  - name: Build Docker image
-    run: docker build -t bhatuse2/nginx:${{ github.sha }} .
+      - name: Build Docker image
+        run: docker build -t bhatuse2/nginx:${{ github.sha }} .
 
-  - name: Login to Docker Hub
-    run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login \
-         -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-  - name: Push Docker image
-    run: docker push bhatuse2/nginx:${{ github.sha }}
+      - name: Push Docker image
+        run: docker push bhatuse2/nginx:${{ github.sha }}
 
-  # 👇 THEN continue
-  - name: Clone Repo
-    run: git clone https://${{ secrets.GIT_TOKEN }}@github.com/Bhatuse/gitops-repo.git
+      - name: Clone Repo
+        run: git clone https://${{ secrets.GIT_TOKEN }}@github.com/Bhatuse/gitops-repo.git
 
-  - name: Update image tag
-    run: |
-      cd gitops-repo/autogit
-      sed -i 's|image: .*|image: bhatuse2/nginx:${{ github.sha }}|' deployment.yml
+      - name: Update image tag
+        run: |
+          cd gitops-repo/autogit
+          sed -i 's|image: .*|image: bhatuse2/nginx:${{ github.sha }}|' deployment.yml
 
-  - name: Commit and Push
-    run: |
-      cd gitops-repo
-      git config user.name "github-actions[bot]"
-      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      git add .
-      git commit -m "update image to ${{ github.sha }} [skip ci]" || echo "No changes"
-      git push
+      - name: Commit and Push
+        run: |
+          cd gitops-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "update image to ${{ github.sha }} [skip ci]" || echo "No changes"
+          git push
