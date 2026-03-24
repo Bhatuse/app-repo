@@ -1,3 +1,5 @@
+#tokenAdded: true
+
 name: basic-gitops-app
 
 on:
