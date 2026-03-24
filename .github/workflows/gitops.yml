@@ -1,0 +1,32 @@
+name: basic-gitops-app
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone Repo
+        run: git clone https://${{ secrets.GIT_TOKEN }}@github.com/Bhatuse/gitops-manifests.git
+
+      - name: Update image tag
+        run: |
+          cd gitops-manifests/autogit
+          sed -i 's|image: .*|image: bhatuse2/nginx:${{ github.sha }}|' deployment.yml
+
+      - name: Commit and Push
+        run: |
+          cd gitops-manifests
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "update image to ${{ github.sha }} [skip ci]" || echo "No changes"
+          git push
