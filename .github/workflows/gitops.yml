@@ -13,11 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t bhatuse2/nginx:${{ github.sha }} ./app
-
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t bhatuse2/nginx:${{ github.sha }} ./app
 
       - name: Push Docker image
         run: docker push bhatuse2/nginx:${{ github.sha }}
@@ -25,10 +25,13 @@ jobs:
       - name: Clone Repo
         run: git clone https://${{ secrets.GIT_TOKEN }}@github.com/Bhatuse/gitops-repo.git
 
-      - name: Update image tag
+      - name: Update values.yaml
         run: |
           cd gitops-repo/nginx-chart
-          sed -i 's|tag: .*|tag: "${{ github.sha }}"|' values-dev.yaml
+          sed -i 's|tag:.*|tag: "${{ github.sha }}"|' values.yaml
+
+      - name: Debug values file
+        run: cat gitops-repo/nginx-chart/values.yaml
 
       - name: Commit and Push
         run: |
