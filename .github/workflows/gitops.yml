@@ -25,13 +25,10 @@ jobs:
       - name: Clone Repo
         run: git clone https://${{ secrets.GIT_TOKEN }}@github.com/Bhatuse/gitops-repo.git
 
-      - name: Update values.yaml
+      - name: Update values-dev.yaml
         run: |
           cd gitops-repo/nginx-chart
-          sed -i 's|tag:.*|tag: "${{ github.sha }}"|' values.yaml
-
-      - name: Debug values file
-        run: cat gitops-repo/nginx-chart/values.yaml
+          sed -i 's|tag:.*|tag: "${{ github.sha }}"|' values-dev.yaml
 
       - name: Commit and Push
         run: |
