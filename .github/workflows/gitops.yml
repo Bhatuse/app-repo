@@ -28,7 +28,7 @@ jobs:
       - name: Update image tag
         run: |
           cd gitops-repo/nginx-chart
-          sed -i 's|tag: .*|tag: "${{ github.sha }}"|' values.yaml
+          sed -i 's|tag: .*|tag: "${{ github.sha }}"|' values-dev.yaml
 
       - name: Commit and Push
         run: |
